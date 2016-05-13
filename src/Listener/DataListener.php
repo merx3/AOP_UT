@@ -10,7 +10,7 @@ class DataListener
 
     public function __construct()
     {
-        $this->functionSignatures = parse_ini_file(__DIR__ .'/../../config/listener.ini')['signatures'];
+        $this->functionSignatures = parse_ini_file('config/listener.ini')['signatures'];
         $this->dataRepository = new DataFlowLogRepository();
     }
 
