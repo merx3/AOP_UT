@@ -1,7 +1,7 @@
-<?php namespace AOP_UT\Tests\Listener;
+<?php namespace AOP_UT\Listener;
 
-use AOP_UT\Tests\DAL\DataFlowLogRepository;
-use AOP_UT\Tests\DAL\DataFlowDirection;
+use AOP_UT\DAL\DataFlowLogRepository;
+use AOP_UT\DAL\DataFlowDirection;
 
 class DataListener
 {

@@ -1,4 +1,4 @@
-<?php namespace AOP_UT\Tests\Advice;
+<?php namespace AOP_UT\Advice;
 
 class AdviceException extends \Exception
 {

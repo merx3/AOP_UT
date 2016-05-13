@@ -1,4 +1,4 @@
-<?php namespace AOP_UT\Tests\DAL;
+<?php namespace AOP_UT\DAL;
 
 class DataFlowLog
 {

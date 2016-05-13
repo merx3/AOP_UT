@@ -14,8 +14,7 @@
     "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
-          "AOP_UT\\": "src/",
-          "AOP_UT\\Tests\\": "Tests/"
+          "AOP_UT\\": "src/"
         }
     }
 }

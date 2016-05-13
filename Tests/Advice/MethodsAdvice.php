@@ -1,7 +1,7 @@
-<?php namespace AOP_UT\Tests\Advice;
+<?php namespace AOP_UT\Advice;
 
-use AOP_UT\Tests\DAL\DataFlowDirection;
-use AOP_UT\Tests\DAL\DataFlowLog;
+use AOP_UT\DAL\DataFlowDirection;
+use AOP_UT\DAL\DataFlowLog;
 
 class MethodsAdvice
 {
