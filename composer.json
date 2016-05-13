@@ -17,5 +17,24 @@
         "psr-4": {
           "AOP_UT\\": "src/"
         }
+    },
+    "repositories": [
+    {
+        "type": "package",
+        "package": {
+            "name": "merx3/aop_ut",
+            "version": "dev-master",
+            "source": {
+                "url": "git@github.com:merx3/AOP_UT.git",
+                "type": "git",
+                "reference": "master"
+            },
+            "autoload": {
+                "psr-4": {
+                  "AOP_UT\\": "src/"
+                }
+            }
+        }
     }
+],
 }
