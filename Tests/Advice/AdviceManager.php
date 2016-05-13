@@ -9,15 +9,23 @@ class AdviceManager
         $nextFunctionLog = $functionLog->nextLog;
         $mockFunctions = [];
         $callDepth = 0;
-        while($nextFunctionLog->functionSignature != $functionLog->functionSignature) {
+        $functionElements = preg_split('/::|\(\)/',  $functionLog->functionSignature);
+        $methodChecker = new \ReflectionMethod('\\' . $functionElements[0], $functionElements[1]);
+        $methodIsStatic = $methodChecker->isStatic();
+        if ($methodIsStatic) {
+            MethodsAdvice::setIgnoreCalls(array($functionLog->functionSignature));
+        } else {
+            MethodsAdvice::setIgnoreCalls(array($functionLog->functionSignature,
+                $functionElements[0] . '::__construct()'));
+        }
+        while ($nextFunctionLog->functionSignature != $functionLog->functionSignature) {
             $nextFunctionLog->flowDirection === DataFlowDirection::CALLING ? $callDepth++ : $callDepth--;
-            if($callDepth == 1) {        
+            if ($callDepth == 1) {
                 $mockFunctions[] = $nextFunctionLog;
             }
             $nextFunctionLog = $nextFunctionLog->nextLog;
         }
         MethodsAdvice::setVerifyCallOrder($verifyCalls);
         MethodsAdvice::enqueueStubs($mockFunctions);
-        MethodsAdvice::setIgnoreCalls(array($functionLog->functionSignature));
     }
 }
