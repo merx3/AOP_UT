@@ -1,0 +1,21 @@
+{
+    "name": "merx3/aop_ut",
+    "description": "Unit tests driven by AOP PhP",
+    "require": {
+        "phpunit/phpunit": "^5.3"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Marian Marinov",
+            "email": "mariyan.marinov@gfk.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+          "AOP_UT\\": "src/",
+          "AOP_UT\\Tests\\": "Tests/"
+        }
+    }
+}
