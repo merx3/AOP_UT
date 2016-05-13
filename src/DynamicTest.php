@@ -16,7 +16,7 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
         $this->adviceManager = new AdviceManager();
     }
 
-    protected function unitTest($className, $methodName)
+    protected function unitTest($className, $methodName, $verifyCallsOrder = false)
     {
         $dataFlow = $this->dataFlowRepo->getDataFlow(1);
         $methodLog = $dataFlow->getStartLog();
@@ -27,7 +27,9 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
         $methodChecker = new \ReflectionMethod($escapedClassName, $methodName);
         $methodIsStatic = $methodChecker->isStatic();
         while ($methodLog != null) {
-            if ($methodLog->functionSignature == $className.'::__construct()') {
+            $methodLogIsConstructor = $methodLog->functionSignature == $className.'::__construct()' ||
+                    $methodLog->functionSignature == $className.'::' . $className . '()';
+            if ($methodLogIsConstructor) {
                 $objectConstructor = $methodLog;
             }
             if($methodLog->functionSignature == $methodSignature && $methodLog->flowDirection === DataFlowDirection::CALLING) {
@@ -35,29 +37,61 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
                     $executionClosure = function($methodLog) use ($className, $methodName) {
                         return call_user_func($className . '::' . $methodName);
                     };
-                    $this->executeMethodLog($methodLog, $executionClosure);
+                    $this->executeMethodLog($methodLog, $executionClosure, $verifyCallsOrder);
                 } else {
                     $executionClosure = function($methodLog) use ($escapedClassName, $methodName, $objectConstructor) {
                         $testObj = new $escapedClassName($objectConstructor->data);
                         return call_user_func_array(array($testObj, $methodName), $methodLog->data);
                     };
-                    $this->executeMethodLog($methodLog, $executionClosure);
+                    $this->executeMethodLog($methodLog, $executionClosure, $verifyCallsOrder);
                 }
             }
             $methodLog = $methodLog->nextLog;
         }
     }
 
-    // for later
-    protected function integrationTest($signatures)
+// TODO: documentation and unit testsing(yo dawg, I heard you like unit tests)
+    protected function integrationTest($signaturePartsList, $verifyCallsOrder = false)
     {
+        $dataFlow = $this->dataFlowRepo->getDataFlow(1);
+        foreach ($signaturePartsList as $signatureParts) {
+            $methodLog = $dataFlow->getStartLog();
+            $escapedClassName = '\\'.$signatureParts[0];
+            $methodSignature = $signatureParts[0].'::'.$signatureParts[1].'()';
+            $objectConstructor = null;
 
+            $methodChecker = new \ReflectionMethod($escapedClassName, $signatureParts[1]);
+            $methodIsStatic = $methodChecker->isStatic();
+            while ($methodLog != null) {
+                $methodLogIsConstructor = $methodLog->functionSignature == $className.'::__construct()' ||
+                        $methodLog->functionSignature == $className.'::' . $className . '()';
+                if ($methodLogIsConstructor) {
+                    $objectConstructor = $methodLog;
+                }
+                // This part is a bit more complicated than I thought, need to think over it later
+                // if($methodLog->functionSignature == $methodSignature && $methodLog->flowDirection === DataFlowDirection::CALLING) {
+                //     if($methodIsStatic){
+                //         $executionClosure = function($methodLog) use ($className, $methodName) {
+                //             return call_user_func($className . '::' . $methodName);
+                //         };
+                //         $this->executeMethodLog($methodLog, $executionClosure, $verifyCallsOrder);
+                //     } else {
+                //         $executionClosure = function($methodLog) use ($escapedClassName, $methodName, $objectConstructor) {
+                //             $testObj = new $escapedClassName($objectConstructor->data);
+                //             return call_user_func_array(array($testObj, $methodName), $methodLog->data);
+                //         };
+                //         $this->executeMethodLog($methodLog, $executionClosure, $verifyCallsOrder);
+                //     }
+                // }
+                // $methodLog = $methodLog->nextLog;
+            }
+        }
     }
 
-    private function executeMethodLog($methodLog, $executionClosure)
+    private function executeMethodLog($methodLog, $executionClosure, $verifyCallsOrder)
     {
         if($methodLog){
-            $this->adviceManager->setStubsFor($methodLog, true);
+            $this->adviceManager->setStubsFor($methodLog, $verifyCallsOrder);
             $output = $executionClosure($methodLog);
             $failures = MethodsAdvice::getFailures();
             if (!empty($failures)) {

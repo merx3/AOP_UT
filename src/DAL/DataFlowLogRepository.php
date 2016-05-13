@@ -2,11 +2,6 @@
 
 class DataFlowLogRepository
 {
-    public function save(DataFlowLog $dataFlowLog)
-    {
-
-    }
-
     // TODO: replase csv with YAML
     public function saveParams($dataFlowId, $functionSignature, $data, $flowDirection)
     {
@@ -14,6 +9,7 @@ class DataFlowLogRepository
         fputcsv($fp, [$dataFlowId, $functionSignature, serialize($data), $flowDirection]);
     }
 
+    // TODO: improve logging file structure
     public function getDataFlow($dataflowId)
     {
         $dataFlowStart = null;
@@ -31,12 +27,11 @@ class DataFlowLogRepository
         return new DataFlow(1, $dataFlowStart);
     }
 
-    public function getAllDataFlows()
-    {
-
-    }
-
     // TODO: getDataFlowsForMethods- get all data flows that have specific methods in them
     //  distribute the data and the functions  so the data flow logs for a specific
     //  function can be easily found
+    public function getDataFlowsForMethods()
+    {
+
+    }
 }
