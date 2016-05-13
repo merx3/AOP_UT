@@ -11,6 +11,7 @@
             "email": "mariyan.marinov@gfk.com"
         }
     ],
+    "version": "0.1",
     "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
