@@ -5,27 +5,46 @@ use AOP_UT\DAL\DataFlowDirection;
 
 class AdviceManager
 {
-    public function setStubsFor(DataFlowLog $functionLog, $verifyCalls = false) {
-        $nextFunctionLog = $functionLog->nextLog;
-        $mockFunctions = [];
-        $callDepth = 0;
-        $functionElements = preg_split('/::|\(\)/',  $functionLog->functionSignature);
-        $methodChecker = new \ReflectionMethod('\\' . $functionElements[0], $functionElements[1]);
-        $methodIsStatic = $methodChecker->isStatic();
-        if ($methodIsStatic) {
-            MethodsAdvice::setIgnoreCalls(array($functionLog->functionSignature));
-        } else {
-            MethodsAdvice::setIgnoreCalls(array($functionLog->functionSignature,
-                $functionElements[0] . '::__construct()'));
-        }
-        while ($nextFunctionLog->functionSignature != $functionLog->functionSignature) {
-            $nextFunctionLog->flowDirection === DataFlowDirection::CALLING ? $callDepth++ : $callDepth--;
-            if ($callDepth == 1) {
-                $mockFunctions[] = $nextFunctionLog;
+    public function setStubsFor($dataFlow, $functionDescriptions, $verifyCalls = false)
+    {
+        $mockFunctions = array();
+        $dataLog = $dataFlow->getStartLog();
+        while ($dataLog != null) {
+            if (in_array($dataLog->functionSignature, $functionDescriptions)) {
+                $nextFunctionLog = $dataLog->nextLog;
+                if (!in_array($nextFunctionLog->functionSignature, $functionDescriptions)) {
+                    $mockFunctions[] = $nextFunctionLog;
+                    $dataLog = $nextFunctionLog->getReturnLog()->nextLog;
+                }
             }
-            $nextFunctionLog = $nextFunctionLog->nextLog;
+            $dataLog = $dataLog->nextLog;
         }
         MethodsAdvice::setVerifyCallOrder($verifyCalls);
         MethodsAdvice::enqueueStubs($mockFunctions);
+    }
+
+    public function ignoreFunctionsInAdvice($functionDescriptions)
+    {
+        $ignoredCalls = array();
+        foreach ($functionDescriptions as $funcDescription) {
+            $methodChecker = new \ReflectionMethod($funcDescription->className, $funcDescription->methodName);
+            $methodIsStatic = $methodChecker->isStatic();
+            if (!$methodIsStatic) {
+                $ignoredCalls[] = $funcDescription->getClassConstructorSignature();
+            }
+            $ignoredCalls[] = $funcDescription->getSignature();
+        }
+        MethodsAdvice::setIgnoreCalls($ignoredCalls);
+    }
+
+    public function removeIgnoredFunctions($functionSignatures)
+    {
+        $ignoredCalls = MethodsAdvice::getIgnoreCalls();
+        for ($i = 0; $i < count($ignoredCalls); $i++) {
+            if (in_array($ignoredCalls[$i], $functionSignatures)) {
+                unset($ignoredCalls[$i]);
+            }
+        }
+        MethodsAdvice::setIgnoreCalls($ignoredCalls);
     }
 }

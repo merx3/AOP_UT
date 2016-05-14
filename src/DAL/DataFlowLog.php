@@ -27,21 +27,31 @@ class DataFlowLog
     */
     public $nextLog;
 
-    public function __construct($dataFlowId, $functionSignature, $data, $flowDirection, $nextLog = null)
+    /**
+     * @param DataFlowLog
+     */
+    public $previousLog;
+
+    public function DataFlowLog($dataFlowId, $functionSignature, $data, $flowDirection, $nextLog = null, $previousLog = null)
     {
         $this->dataFlowId = $dataFlowId;
         $this->functionSignature = $functionSignature;
         $this->data = $data;
         $this->flowDirection = $flowDirection;
         $this->nextLog = $nextLog;
+        $this->previousLog = $previousLog;
     }
 
     public function getReturnLog()
     {
         $nextLog = $this->nextLog;
+        $callDepth = 1;
         while ($nextLog != null) {
             if ($this->functionSignature == $nextLog->functionSignature) {
-                return $nextLog;
+                $nextLog->flowDirection === DataFlowDirection::CALLING ? $callDepth++ : $callDepth--;
+                if ($callDepth == 0) {
+                    return $nextLog;
+                }
             }
             $nextLog = $nextLog->nextLog;
         }

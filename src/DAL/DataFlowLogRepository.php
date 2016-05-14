@@ -2,7 +2,6 @@
 
 class DataFlowLogRepository
 {
-    // TODO: replase csv with YAML
     public function saveParams($dataFlowId, $functionSignature, $data, $flowDirection)
     {
         $fp = fopen('log.csv', 'a');
@@ -14,6 +13,7 @@ class DataFlowLogRepository
     {
         $dataFlowStart = null;
         $currentDataLog = null;
+        $previousDataLog = null;
         $fp = fopen('log.csv', 'r');
         while (($data = fgetcsv($fp, 1000)) !== FALSE) {
             $dataFlowLog = new DataFlowLog((int)$data[0], $data[1], unserialize($data[2]), (int)$data[3]);
@@ -21,6 +21,7 @@ class DataFlowLogRepository
                 $dataFlowStart = $dataFlowLog;
             } else {
                 $currentDataLog->nextLog = $dataFlowLog;
+                $dataFlowLog->previousLog = $currentDataLog;
             }
             $currentDataLog = $dataFlowLog;
         }

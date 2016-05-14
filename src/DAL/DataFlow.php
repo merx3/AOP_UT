@@ -12,7 +12,7 @@ class DataFlow
     */
     private $startLog;
 
-    public function __construct($flowId, $startingLog)
+    public function DataFlow($flowId, $startingLog)
     {
         $this->id = $flowId;
         $this->startLog = $startingLog;
