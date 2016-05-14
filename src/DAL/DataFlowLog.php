@@ -32,7 +32,7 @@ class DataFlowLog
      */
     public $previousLog;
 
-    public function DataFlowLog($dataFlowId, $functionSignature, $data, $flowDirection, $nextLog = null, $previousLog = null)
+    public function __construct($dataFlowId, $functionSignature, $data, $flowDirection, $nextLog = null, $previousLog = null)
     {
         $this->dataFlowId = $dataFlowId;
         $this->functionSignature = $functionSignature;

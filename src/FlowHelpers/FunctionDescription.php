@@ -5,7 +5,7 @@ class FunctionDescription
     public $className;
     public $methodName;
 
-    public function FunctionDescription($className = '', $methodName = '')
+    function __construct($className = '', $methodName = '')
     {
         $this->className = $className;
         $this->methodName = $methodName;
