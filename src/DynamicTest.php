@@ -21,7 +21,7 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
     {
         $functionDescriptions = array(new FunctionDescription($className, $methodName));
         $this->runTests($functionDescriptions,$verifyCallsOrder);
-        return this;
+        return $this;
     }
 
     // TODO: implement exception testing
@@ -35,7 +35,7 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
             }
         }
         $this->runTests($functionDescriptions,$verifyCallsOrder);
-        return this;
+        return $this;
     }
 
 // TODO: documentation and unit testsing(yo dawg, I heard you like unit tests)
@@ -72,7 +72,7 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
                 $classRefl->getConstructor()->name . '()';
         }
         $this->adviceManager->removeIgnoredFunctions($constructorSignatures);
-        return this;
+        return $this;
     }
 
     private function executeMethodLogs($methodLogs, $constructorLogs)

@@ -12,7 +12,7 @@ class AdviceManager
         while ($dataLog != null) {
             if (in_array($dataLog->functionSignature, $functionDescriptions)) {
                 $nextFunctionLog = $dataLog->nextLog;
-                if (!in_array($nextFunctionLog->functionSignature, $functionDescriptions)) {
+                if ($nextFunctionLog && !in_array($nextFunctionLog->functionSignature, $functionDescriptions)) {
                     $mockFunctions[] = $nextFunctionLog;
                     $dataLog = $nextFunctionLog->getReturnLog()->nextLog;
                 }
