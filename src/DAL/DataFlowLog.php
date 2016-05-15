@@ -47,11 +47,9 @@ class DataFlowLog
         $nextLog = $this->nextLog;
         $callDepth = 1;
         while ($nextLog != null) {
-            if ($this->functionSignature == $nextLog->functionSignature) {
-                $nextLog->flowDirection === DataFlowDirection::CALLING ? $callDepth++ : $callDepth--;
-                if ($callDepth == 0) {
-                    return $nextLog;
-                }
+            $nextLog->flowDirection === DataFlowDirection::CALLING ? $callDepth++ : $callDepth--;
+            if ($this->functionSignature == $nextLog->functionSignature && $callDepth == 0) {
+                return $nextLog;
             }
             $nextLog = $nextLog->nextLog;
         }

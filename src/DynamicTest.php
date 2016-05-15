@@ -53,7 +53,7 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
             } else  {
                 $functionDescription = new FunctionDescription();
                 $functionDescription->setSignature($dataLog->functionSignature);
-                if ($functionDescription->isConstructor()) {
+                if ($functionDescription->isConstructor() && $dataLog->flowDirection == DataFlowDirection::CALLING) {
                     $constructorLogs[$functionDescription->className] = $dataLog;
                 }
             }

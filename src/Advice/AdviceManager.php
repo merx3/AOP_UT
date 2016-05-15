@@ -12,12 +12,18 @@ class AdviceManager
         while ($dataLog != null) {
             if (in_array($dataLog->functionSignature, $functionDescriptions)) {
                 $nextFunctionLog = $dataLog->nextLog;
-                if ($nextFunctionLog && !in_array($nextFunctionLog->functionSignature, $functionDescriptions)) {
-                    $mockFunctions[] = $nextFunctionLog;
-                    $dataLog = $nextFunctionLog->getReturnLog()->nextLog;
+                while ($nextFunctionLog && $nextFunctionLog->functionSignature != $dataLog->functionSignature) {
+                    if (!in_array($nextFunctionLog->functionSignature, $functionDescriptions)) {
+                        $mockFunctions[] = $nextFunctionLog;
+                        $nextFunctionLog = $nextFunctionLog->getReturnLog()->nextLog;
+                    } else {
+                        $nextFunctionLog = $nextFunctionLog->nextLog;
+                    }
                 }
+                $dataLog = $nextFunctionLog->nextLog;
+            } else {
+                $dataLog = $dataLog->nextLog;
             }
-            $dataLog = $dataLog->nextLog;
         }
         MethodsAdvice::setVerifyCallOrder($verifyCalls);
         MethodsAdvice::enqueueStubs($mockFunctions);
