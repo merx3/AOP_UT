@@ -20,7 +20,7 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
     protected function unitTest($className, $methodName, $verifyCallsOrder = false)
     {
         $functionDescriptions = array(new FunctionDescription($className, $methodName));
-        $this->testFunctions($functionDescriptions,$verifyCallsOrder);
+        $this->runTests($functionDescriptions,$verifyCallsOrder);
         return this;
     }
 
@@ -34,12 +34,12 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
                 $functionDescriptions[] = new FunctionDescription($className, $function);
             }
         }
-        $this->testFunctions($functionDescriptions,$verifyCallsOrder);
+        $this->runTests($functionDescriptions,$verifyCallsOrder);
         return this;
     }
 
 // TODO: documentation and unit testsing(yo dawg, I heard you like unit tests)
-    private function testFunctions($testedFunctionDescriptions, $verifyCallsOrder = false)
+    private function runTests($testedFunctionDescriptions, $verifyCallsOrder = false)
     {
         $dataFlow = $this->dataFlowRepo->getDataFlow(1);
         $this->adviceManager->ignoreFunctionsInAdvice($testedFunctionDescriptions);
@@ -108,7 +108,7 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
         // so it's not a start point
         if ($dataLog->flowDirection === DataFlowDirection::CALLING &&
             in_array($dataLog->functionSignature, $testedFunctionDescriptions) &&
-            !in_array($dataLog->previousLog->functionsignature, $testedFunctionDescriptions)) {
+            (!$dataLog->previousLog || !in_array($dataLog->previousLog->functionSignature, $testedFunctionDescriptions))) {
             return true;
         }
         return false;

@@ -37,7 +37,7 @@ class FunctionDescription
 
     public function isConstructor()
     {
-        $refl = new ReflectionClass($this->className);
+        $refl = new \ReflectionClass($this->className);
         $constructor = $refl->getConstructor();
         if ($constructor && $constructor->name == $this->methodName) {
             return true;
