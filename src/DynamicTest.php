@@ -91,11 +91,12 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
                 }
                 $failures = MethodsAdvice::getFailures();
                 if (!empty($failures)) {
+                    MethodsAdvice::tearDown();
                     $this->fail(implode($failures, PHP_EOL));
                 }
                 $this->assertEquals($methodLog->getReturnLog()->data, $output);
-                MethodsAdvice::tearDown();
             }
+            MethodsAdvice::tearDown();
         } else {
             throw new Exception('No method in logs to unit test found. ' .
                 'This is considered a bug in the Unit testing framework');

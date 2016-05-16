@@ -1,0 +1,10 @@
+1,"Tests\Samples\SimpleFunction::__construct()","a:1:{i:0;s:18:""dbConnectionString"";}",0
+1,"Tests\Samples\SimpleFunction::__construct()",N;,1
+1,"Tests\Samples\SimpleFunction::advancedFunc()",a:1:{i:0;i:11;},0
+1,"Tests\Samples\SimpleFunction::normFunc()",a:1:{i:0;i:11;},0
+1,"Tests\Samples\SimpleFunction::normFunc()",i:6;,1
+1,"Tests\Samples\SimpleFunction::normFunc()",a:1:{i:0;i:6;},0
+1,"Tests\Samples\SimpleFunction::normFunc()",i:1;,1
+1,"Tests\Samples\SimpleFunction::helperFunc()",a:1:{i:0;i:1;},0
+1,"Tests\Samples\SimpleFunction::helperFunc()",i:9;,1
+1,"Tests\Samples\SimpleFunction::advancedFunc()",b:1;,1

@@ -1,20 +1,16 @@
 <?php namespace Tests;
 
-abstract class TestsBase extends \PHPUnit_Framework_TestCase
+abstract class TestsBase extends \AOP_UT\DynamicTest
 {
-    protected $listenerContent;
+    protected static $listenerContent;
 
-    public function setUp()
+    public static function setUpBeforeClass()
     {
-        file_put_contents('config/listener.ini', $this->listenerContent);
-        $functionSignatures = parse_ini_file('config/listener.ini')['signatures'];
-        foreach ($functionSignatures as $func) {
-            aop_add_around($func, array('AOP_UT\Advice\MethodsAdvice', 'adviceAround'));
-        }
-
+        file_put_contents('config/listener.ini', self::$listenerContent);
+        include 'src/bootstrap.php';
     }
 
-    public function tearDown()
+    public static function tearDownAfterClass()
     {
         unlink('config/listener.ini');
     }
