@@ -1,7 +1,7 @@
 {
     "name": "merx3/aop_ut",
     "description": "Unit tests driven by AOP PhP",
-    "require": {
+    "require-dev": {
         "phpunit/phpunit": "^5.3"
     },
     "license": "MIT",
@@ -14,7 +14,8 @@
     "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
-          "AOP_UT\\": "src/"
+          "AOP_UT\\": "src/",
+          "Tests\\": "Tests/"
         }
     }
 }
