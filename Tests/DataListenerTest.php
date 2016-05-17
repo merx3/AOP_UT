@@ -14,6 +14,7 @@ class DataListenerTest extends \PHPUnit_Framework_TestCase
             'signatures[] = "Tests\Samples\SimpleFunction::__construct()"' . PHP_EOL .
             'signatures[] = "Tests\Samples\SimpleFunction::statFunc()"' . PHP_EOL .
             'signatures[] = "Tests\Samples\SimpleFunction::normFunc()"' . PHP_EOL .
+            'signatures[] = "Tests\Samples\SimpleFunction::secondLevelFunc()"' . PHP_EOL .
             'signatures[] = "Tests\Samples\SimpleFunction::helperFunc()"' . PHP_EOL .
             'signatures[] = "Tests\Samples\SimpleFunction::advancedFunc()"' . PHP_EOL
         ;
@@ -38,8 +39,12 @@ class DataListenerTest extends \PHPUnit_Framework_TestCase
                 array('__construct()', null, DataFlowDirection::RETURNING),
                 array('advancedFunc()', array(11), DataFlowDirection::CALLING),
                 array('normFunc()', array(11), DataFlowDirection::CALLING),
+                array('secondLevelFunc()', array(11), DataFlowDirection::CALLING),
+                array('secondLevelFunc()', 11, DataFlowDirection::RETURNING),
                 array('normFunc()', 6, DataFlowDirection::RETURNING),
                 array('normFunc()', array(6), DataFlowDirection::CALLING),
+                array('secondLevelFunc()', array(6), DataFlowDirection::CALLING),
+                array('secondLevelFunc()', 6, DataFlowDirection::RETURNING),
                 array('normFunc()', 1, DataFlowDirection::RETURNING),
                 array('helperFunc()', array(1), DataFlowDirection::CALLING),
                 array('helperFunc()', 9, DataFlowDirection::RETURNING),

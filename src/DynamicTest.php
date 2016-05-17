@@ -39,6 +39,9 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
     }
 
 // TODO: documentation and unit testsing(yo dawg, I heard you like unit tests)
+// TODO: use migrations instead of csv/yaml?
+// TODO: how do I handle internal complex obejct initialization inside functions?
+// TODO: how do I handle initialization of internal settings that the function uses?
     private function runTests($testedFunctionDescriptions, $verifyCallsOrder = false)
     {
         $dataFlow = $this->dataFlowRepo->getDataFlow(1);

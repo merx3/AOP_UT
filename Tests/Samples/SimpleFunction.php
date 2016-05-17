@@ -12,8 +12,14 @@ class SimpleFunction
         return $a * 2;
     }
 
+    private function secondLevelFunc($a)
+    {
+        return $a;
+    }
+
     public function normFunc($a)
     {
+        $this->secondLevelFunc($a);
         return $a - 5;
     }
 

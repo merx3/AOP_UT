@@ -9,7 +9,7 @@ class DataFlowLogRepository
     }
 
     // TODO: improve logging file structure
-    public function getDataFlow($dataflowId)
+    public function getDataFlow($dataFlowId)
     {
         $dataFlowStart = null;
         $currentDataLog = null;

@@ -14,6 +14,13 @@ class AdviceManager
                 $nextFunctionLog = $dataLog->nextLog;
                 while ($nextFunctionLog && $nextFunctionLog->functionSignature != $dataLog->functionSignature) {
                     if (!in_array($nextFunctionLog->functionSignature, $functionDescriptions)) {
+                        $tmp = $nextFunctionLog->nextLog;
+                        $tmp2 = $nextFunctionLog->previousLog;
+                        $nextFunctionLog->nextLog = null;
+                        $nextFunctionLog->previousLog = null;
+//                        var_dump($nextFunctionLog);
+                        $nextFunctionLog->nextLog = $tmp;
+                        $nextFunctionLog->previousLog = $tmp2;
                         $mockFunctions[] = $nextFunctionLog;
                         $nextFunctionLog = $nextFunctionLog->getReturnLog()->nextLog;
                     } else {
