@@ -1,4 +1,5 @@
 <?php
+ini_set('aop.enable', '0');
 
 $functionSignatures = parse_ini_file('config/listener.ini')['signatures'];
 foreach ($functionSignatures as $func) {

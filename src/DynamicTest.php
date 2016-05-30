@@ -20,7 +20,7 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
     protected function unitTest($className, $methodName, $verifyCallsOrder = false)
     {
         $functionDescriptions = array(new FunctionDescription($className, $methodName));
-        $this->runTests($functionDescriptions,$verifyCallsOrder);
+        $this->runTests($functionDescriptions, $verifyCallsOrder);
         return $this;
     }
 
@@ -34,7 +34,7 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
                 $functionDescriptions[] = new FunctionDescription($className, $function);
             }
         }
-        $this->runTests($functionDescriptions,$verifyCallsOrder);
+        $this->runTests($functionDescriptions, $verifyCallsOrder);
         return $this;
     }
 
@@ -47,23 +47,16 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
         $dataFlow = $this->dataFlowRepo->getDataFlow(1);
         $this->adviceManager->ignoreFunctionsInAdvice($testedFunctionDescriptions);
         $executionStartPoints = array();
-        $constructorLogs = array();
 
         $dataLog = $dataFlow->getStartLog();
         while ($dataLog != null) {
             if ($this->isStartingPoint($dataLog, $testedFunctionDescriptions)) {
                 $executionStartPoints[] = $dataLog;
-            } else  {
-                $functionDescription = new FunctionDescription();
-                $functionDescription->setSignature($dataLog->functionSignature);
-                if ($functionDescription->isConstructor() && $dataLog->flowDirection == DataFlowDirection::CALLING) {
-                    $constructorLogs[$functionDescription->className] = $dataLog;
-                }
             }
             $dataLog = $dataLog->nextLog;
         }
         $this->adviceManager->setStubsFor($dataFlow, $testedFunctionDescriptions, $verifyCallsOrder);
-        $this->executeMethodLogs($executionStartPoints, $constructorLogs);
+        $this->executeMethodLogs($executionStartPoints);
     }
 
     protected function stubConstructors($classNames)
@@ -78,18 +71,17 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
         return $this;
     }
 
-    private function executeMethodLogs($methodLogs, $constructorLogs)
+    private function executeMethodLogs($methodLogs)
     {
         if ($methodLogs) {
+            $this->adviceManager->startListener();
             foreach ($methodLogs as $methodLog) {
                 $functionDescription = new FunctionDescription();
                 $functionDescription->setSignature($methodLog->functionSignature);
                 if ($functionDescription->isStatic()) {
                     $output = call_user_func($functionDescription->className . '::' . $functionDescription->methodName);
                 } else {
-                    $escapedClassName = '\\' . $functionDescription->className;
-                    $objectConstructor = $constructorLogs[$functionDescription->className];
-                    $testObj = new $escapedClassName($objectConstructor->data);
+                    $testObj = $this->createTestObject($functionDescription->className);
                     $output = call_user_func_array(array($testObj, $functionDescription->methodName), $methodLog->data);
                 }
                 $failures = MethodsAdvice::getFailures();
@@ -99,6 +91,7 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
                 }
                 $this->assertEquals($methodLog->getReturnLog()->data, $output);
             }
+            $this->adviceManager->stopListener();
             MethodsAdvice::tearDown();
         } else {
             throw new Exception('No method in logs to unit test found. ' .
@@ -116,5 +109,13 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
             return true;
         }
         return false;
+    }
+
+    private function createTestObject($className)
+    {
+        $escapedClassName = '\\' . $className;
+        $classRefl = new \ReflectionClass($escapedClassName);
+        $paramNumber = $classRefl->getConstructor()->getNumberOfParameters();
+        return $classRefl->newInstanceArgs(array_fill(0, $paramNumber, 'dummyData'));
     }
 }

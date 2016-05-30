@@ -14,13 +14,6 @@ class AdviceManager
                 $nextFunctionLog = $dataLog->nextLog;
                 while ($nextFunctionLog && $nextFunctionLog->functionSignature != $dataLog->functionSignature) {
                     if (!in_array($nextFunctionLog->functionSignature, $functionDescriptions)) {
-                        $tmp = $nextFunctionLog->nextLog;
-                        $tmp2 = $nextFunctionLog->previousLog;
-                        $nextFunctionLog->nextLog = null;
-                        $nextFunctionLog->previousLog = null;
-//                        var_dump($nextFunctionLog);
-                        $nextFunctionLog->nextLog = $tmp;
-                        $nextFunctionLog->previousLog = $tmp2;
                         $mockFunctions[] = $nextFunctionLog;
                         $nextFunctionLog = $nextFunctionLog->getReturnLog()->nextLog;
                     } else {
@@ -40,10 +33,9 @@ class AdviceManager
     {
         $ignoredCalls = array();
         foreach ($functionDescriptions as $funcDescription) {
-            $methodChecker = new \ReflectionMethod($funcDescription->className, $funcDescription->methodName);
-            $methodIsStatic = $methodChecker->isStatic();
-            if (!$methodIsStatic) {
-                $ignoredCalls[] = $funcDescription->getClassConstructorSignature();
+            $classConstructor = $funcDescription->getClassConstructorSignature();
+            if ($classConstructor) {
+                $ignoredCalls[] = $classConstructor;
             }
             $ignoredCalls[] = $funcDescription->getSignature();
         }
@@ -59,5 +51,15 @@ class AdviceManager
             }
         }
         MethodsAdvice::setIgnoreCalls($ignoredCalls);
+    }
+
+    public function startListener()
+    {
+        ini_set('aop.enable', '1');
+    }
+
+    public function stopListener()
+    {
+        ini_set('aop.enable', '0');
     }
 }

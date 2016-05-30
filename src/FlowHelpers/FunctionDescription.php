@@ -26,7 +26,13 @@ class FunctionDescription
     public function getClassConstructorSignature()
     {
         $classRefl = new \ReflectionClass($this->className);
-        return $this->className . '::' . $classRefl->getConstructor()->name . '()';
+        $methodChecker = new \ReflectionMethod($this->className, $this->methodName);
+        $methodIsStatic = $methodChecker->isStatic();
+        if (!$methodIsStatic) {
+            return $this->className . '::' . $classRefl->getConstructor()->name . '()';
+        } else {
+            return false;
+        }
     }
 
     public function isStatic()

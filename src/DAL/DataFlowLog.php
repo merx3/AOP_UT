@@ -55,4 +55,19 @@ class DataFlowLog
         }
         throw new Exception('No return log found of function ' . $this->functionSignature . ' in logs for data flow ' . $this->dataFlowId);
     }
+
+    public function __toString()
+    {
+        $nextLog = $this->nextLog;
+        $prevLog = $this->previousLog;
+        $data = $this->data;
+        $this->nextLog = null;
+        $this->previousLog = null;
+        $this->data = null;
+        $stringVal = var_export($this, true);
+        $this->nextLog = $nextLog;
+        $this->previousLog = $prevLog;
+        $this->data = $data;
+        return $stringVal;
+    }
 }
