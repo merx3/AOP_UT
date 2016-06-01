@@ -31,13 +31,14 @@ class DataListener
         }
     }
 
-    public function pause()
-    {
-        ini_set('aop.enable', '0');
-    }
-
-    public function resume()
-    {
-        ini_set('aop.enable', '1');
-    }
+    // Not Working, bug in AOP PHP
+//    public function pause()
+//    {
+//        ini_set('aop.enable', '0');
+//    }
+//
+//    public function resume()
+//    {
+//        ini_set('aop.enable', '1');
+//    }
 }

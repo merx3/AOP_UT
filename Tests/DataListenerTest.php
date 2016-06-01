@@ -54,6 +54,9 @@ class DataListenerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($logs, $expectedLogs);
     }
 
+    // TODO: AOP for properties is not working, use getters and setters for now. in future,
+    // maybe do a pull request for the PHP AOP project to fix this
+
     private function generateListenerEntries($dataFlowId, $functionSignatures)
     {
         $logEntry = '';
