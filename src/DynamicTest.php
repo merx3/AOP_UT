@@ -40,8 +40,6 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
 
 // TODO: documentation and unit testsing(yo dawg, I heard you like unit tests)
 // TODO: use migrations instead of csv/yaml?
-// TODO: how do I handle internal complex obejct initialization inside functions?
-// TODO: how do I handle initialization of internal settings that the function uses?
     private function runTests($testedFunctionDescriptions, $verifyCallsOrder = false)
     {
         $dataFlow = $this->dataFlowRepo->getDataFlow(1);
@@ -59,7 +57,7 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
         $this->executeMethodLogs($executionStartPoints);
     }
 
-    protected function stubConstructors($classNames)
+    protected function executeConstructors($classNames)
     {
         $constructorSignatures = array();
         foreach ($classNames as $className) {
@@ -115,7 +113,18 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
     {
         $escapedClassName = '\\' . $className;
         $classRefl = new \ReflectionClass($escapedClassName);
-        $paramNumber = $classRefl->getConstructor()->getNumberOfParameters();
-        return $classRefl->newInstanceArgs(array_fill(0, $paramNumber, 'dummyData'));
+        $parameters = $classRefl->getConstructor()->getParameters();
+        $argsArray = array();
+        foreach ($parameters as $parameter) {
+            if ($parameter->isArray()) {
+                $argsArray[] = array();
+            } elseif ($parameter->getClass()) {
+                $argsArray[] = $this->createTestObject($parameter->getClass()->name);
+            } else {
+                $argsArray[] = 'dummyData';
+            }
+        }
+
+        return $classRefl->newInstanceArgs($argsArray);
     }
 }

@@ -2,6 +2,7 @@
 
 use AOP_UT\DAL\DataFlowDirection;
 use AOP_UT\DAL\DataFlowLog;
+use AOP_UT\FlowHelpers\FunctionDescription;
 
 class MethodsAdvice
 {
@@ -71,11 +72,15 @@ class MethodsAdvice
             $joinPoint->process();
             return false;
         }
+        if (self::isConstructor($functionSignature)) {
+            // constructors are not executed
+            return false;
+        }
         if (empty(self::$stubs)) {
             if(self::$verifyCallOrder){
                 throw new AdviceException('Method stubs array is empty but call to method ' . $functionSignature . ' expected');
             }
-            $joinPoint->process(); // normal method run since no stubs exist
+            $joinPoint->process(); // normal method run, since no stubs exist
             return false;
         }
         if (self::$verifyCallOrder && self::$stubs[0]->functionSignature != $functionSignature) {
@@ -108,5 +113,12 @@ class MethodsAdvice
             }
         }
         return false;
+    }
+
+    private static function isConstructor($functionSignature)
+    {
+        $functionDescription = new FunctionDescription();
+        $functionDescription->setSignature($functionSignature);
+        return $functionDescription->isConstructor();
     }
 }

@@ -33,10 +33,6 @@ class AdviceManager
     {
         $ignoredCalls = array();
         foreach ($functionDescriptions as $funcDescription) {
-            $classConstructor = $funcDescription->getClassConstructorSignature();
-            if ($classConstructor) {
-                $ignoredCalls[] = $classConstructor;
-            }
             $ignoredCalls[] = $funcDescription->getSignature();
         }
         MethodsAdvice::setIgnoreCalls($ignoredCalls);

@@ -11,7 +11,6 @@ class DataListenerTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->listenerContent = '[function_signatures]' . PHP_EOL .
-            'signatures[] = "Tests\Samples\SimpleFunction::__construct()"' . PHP_EOL .
             'signatures[] = "Tests\Samples\SimpleFunction::statFunc()"' . PHP_EOL .
             'signatures[] = "Tests\Samples\SimpleFunction::normFunc()"' . PHP_EOL .
             'signatures[] = "Tests\Samples\SimpleFunction::secondLevelFunc()"' . PHP_EOL .
@@ -30,13 +29,11 @@ class DataListenerTest extends \PHPUnit_Framework_TestCase
     {
         $dl = new DataListener();
         $dl->start();
-        $funcObj = new SimpleFunction('dbConnectionString');
+        $funcObj = new SimpleFunction('doNotThrowException');
         $funcObj->advancedFunc(11);
         $logs = file_get_contents('log.csv');
         $expectedLogs = $this->generateListenerEntries(1,
             array('Tests\Samples\SimpleFunction' => array(
-                array('__construct()', array("dbConnectionString"), DataFlowDirection::CALLING),
-                array('__construct()', null, DataFlowDirection::RETURNING),
                 array('advancedFunc()', array(11), DataFlowDirection::CALLING),
                 array('normFunc()', array(11), DataFlowDirection::CALLING),
                 array('secondLevelFunc()', array(11), DataFlowDirection::CALLING),

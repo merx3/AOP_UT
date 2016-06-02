@@ -4,6 +4,9 @@ class SimpleFunction
 {
     public function __construct($dbConnectionParams)
     {
+        if($dbConnectionParams != 'doNotThrowException') {
+            throw new \Exception('Constructor is not supposed to be called when unit testing');
+        }
         // setup some db connections
     }
 
