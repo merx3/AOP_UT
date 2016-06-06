@@ -54,7 +54,7 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
             $dataLog = $dataLog->nextLog;
         }
         $this->adviceManager->setStubsFor($dataFlow, $testedFunctionDescriptions, $verifyCallsOrder);
-        $this->executeMethodLogs($executionStartPoints);
+        $this->executeMethodLogs($executionStartPoints, $testedFunctionDescriptions);
     }
 
     protected function executeConstructors($classNames)
@@ -69,7 +69,7 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
         return $this;
     }
 
-    private function executeMethodLogs($methodLogs)
+    private function executeMethodLogs($methodLogs, $testedFunctionDescriptions)
     {
         if ($methodLogs) {
             $this->adviceManager->startListener();
@@ -79,7 +79,7 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
                 if ($functionDescription->isStatic()) {
                     $output = call_user_func($functionDescription->className . '::' . $functionDescription->methodName);
                 } else {
-                    $testObj = $this->createTestObject($functionDescription->className);
+                    $testObj = $this->createTestObject($functionDescription->className, $testedFunctionDescriptions);
                     $output = call_user_func_array(array($testObj, $functionDescription->methodName), $methodLog->data);
                 }
                 $failures = MethodsAdvice::getFailures();
@@ -109,22 +109,25 @@ abstract class DynamicTest extends \PHPUnit_Framework_TestCase
         return false;
     }
 
-    private function createTestObject($className)
+    private function createTestObject($className, $testedFunctionDescriptions)
     {
-        $escapedClassName = '\\' . $className;
-        $classRefl = new \ReflectionClass($escapedClassName);
-        $parameters = $classRefl->getConstructor()->getParameters();
-        $argsArray = array();
-        foreach ($parameters as $parameter) {
-            if ($parameter->isArray()) {
-                $argsArray[] = array();
-            } elseif ($parameter->getClass()) {
-                $argsArray[] = $this->createTestObject($parameter->getClass()->name);
-            } else {
-                $argsArray[] = 'dummyData';
+        $mockMethods = $this->getAllMethodsExcept($className, $testedFunctionDescriptions);
+        $object = $this->getMockBuilder($className)
+            ->setMethods($mockMethods)
+            ->disableOriginalConstructor()
+            ->getMock();
+        return $object;
+    }
+
+    private function getAllMethodsExcept($className, $excludedFunctionDescriptions)
+    {
+        $classMethods = get_class_methods($className);
+        $excludedMethods = array();
+        foreach ($excludedFunctionDescriptions as $fd) {
+            if ($fd->className == $className) {
+                $excludedMethods[] = $fd->methodName;
             }
         }
-
-        return $classRefl->newInstanceArgs($argsArray);
+        return array_diff($classMethods, $excludedMethods);
     }
 }

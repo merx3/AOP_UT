@@ -5,7 +5,7 @@ class DataFlowLogRepository
     public function saveParams($dataFlowId, $functionSignature, $data, $flowDirection)
     {
         $fp = fopen('log.csv', 'a');
-        fputcsv($fp, [$dataFlowId, $functionSignature, serialize($data), $flowDirection]);
+        fputcsv($fp, array($dataFlowId, $functionSignature, serialize($data), $flowDirection));
     }
 
     // TODO: improve logging file structure
